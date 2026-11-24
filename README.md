@@ -49,6 +49,18 @@ Configuración del proyecto existente:
 
 El uso de Wrangler por la plataforma solo realiza el despliegue. El sitio no usa Node, npm ni código Worker durante su funcionamiento público.
 
+## Centro de control privado
+
+La ruta `/control/` contiene el centro de control Digicaster. Comparte este repositorio y el mismo proyecto de Cloudflare, pero permanece separada de la transmisión pública:
+
+- Cloudflare Access protege `https://live.afproday2027.com/control/*` mediante OTP para correos autorizados.
+- `public/worker.js` solo se ejecuta para `/control` y `/control/*`; las páginas públicas continúan sirviéndose directamente como Static Assets.
+- El Worker bloquea `/control/*` en el hostname técnico y expone `/control/api/status` únicamente detrás de Access.
+- El estado consulta una lista fija de URLs públicas con timeout. No usa credenciales ni APIs de AWS, GitHub, Cloudflare o Mailtrap.
+- La interfaz no contiene contraseñas ni claves API. Cualquier integración futura debe usar Secrets de Cloudflare.
+
+No publiques el centro de control antes de crear y probar la aplicación de Access. La aplicación debe cubrir `/control/*` y permitir solamente los correos aprobados; usa One-time PIN como método de acceso.
+
 En **Workers & Pages → afproday-live → Settings → Builds**, la integración con GitHub debe mostrar el repositorio anterior sin advertencias de desconexión. Si aparece **This project is disconnected from your Git account**, usa **Manage** para volver a autorizar la aplicación de Cloudflare en GitHub antes del siguiente despliegue.
 
 Este repositorio no ejecuta despliegues automáticamente desde una máquina local. Haz commit y push solo después de revisar los cambios; Cloudflare publicará el commit de `main` conforme a la integración Git configurada.

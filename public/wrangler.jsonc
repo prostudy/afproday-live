@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
+  "name": "afproday-live",
+  "main": "./worker.js",
+  "compatibility_date": "2026-11-24",
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/control",
+      "/control/*"
+    ]
+  }
+}

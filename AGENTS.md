@@ -12,10 +12,14 @@
 
 - Conserva el sitio como HTML, CSS y JavaScript puro dentro de `public/`.
 - El alojamiento oficial es Cloudflare Workers Static Assets en el proyecto `afproday-live`.
-- No agregues ningún script, handler o binding Worker. Los archivos estáticos deben servirse directamente sin ejecutar código Worker.
+- La página pública (`/`, `/evento.html` y assets del player) debe seguir sirviéndose directamente como Static Assets, sin invocar código Worker.
+- `public/worker.js` puede ejecutarse únicamente para `/control` y `/control/*`, conforme a `public/wrangler.jsonc`.
+- `/control/*` debe permanecer protegido mediante Cloudflare Access y solo puede publicarse después de comprobar que el dominio técnico `workers.dev` no permite eludir Access.
+- El endpoint `/control/api/status` solo puede consultar la lista fija de URLs públicas declarada en `public/worker.js`; no acepta destinos proporcionados por el usuario.
 - No agregues Node, npm, frameworks, herramientas de compilación, PHP ni Pages Functions a la aplicación. El comando administrado `npx wrangler deploy` de Cloudflare es únicamente el mecanismo de despliegue.
-- No agregues autenticación, sesiones, cookies, GTM, analítica o seguimiento de actividad.
-- No llames `/api/v1/*` ni servicios de AWS.
+- No implementes autenticación propia, contraseñas, sesiones, cookies, GTM, analítica o seguimiento de actividad. La autenticación pertenece a Cloudflare Access.
+- No llames `/api/v1/*` ni APIs autenticadas de AWS. El chequeo HTTP de las dos URLs públicas de CloudFront solo está permitido desde `/control/api/status`.
+- Nunca guardes correos autorizados, tokens, claves API o contraseñas en el repositorio. La lista de acceso se administra en Cloudflare Access y los secretos futuros mediante bindings Secret.
 - Limita las dependencias externas al iframe del proveedor de video.
 
 ## Seguridad y accesibilidad
@@ -32,4 +36,5 @@
 - Revisa `/` y `/evento.html`.
 - Prueba `scheduled`, `live`, `offline` y una URL inválida.
 - Confirma que no haya errores de consola, llamadas a `/api/v1/*` ni referencias públicas a AWS.
+- Para `/control/`, confirma que Access bloquee visitantes no autorizados, que los correos permitidos puedan entrar y que el endpoint de estado no sea accesible mediante el hostname técnico.
 - Deja la configuración final en el estado solicitado para producción y resume las pruebas realizadas.
