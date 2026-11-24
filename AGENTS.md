@@ -11,7 +11,9 @@
 ## Arquitectura obligatoria
 
 - Conserva el sitio como HTML, CSS y JavaScript puro dentro de `public/`.
-- No agregues Node, npm, frameworks, herramientas de compilación, PHP, Pages Functions ni Workers.
+- El alojamiento oficial es Cloudflare Workers Static Assets en el proyecto `afproday-live`.
+- No agregues ningún script, handler o binding Worker. Los archivos estáticos deben servirse directamente sin ejecutar código Worker.
+- No agregues Node, npm, frameworks, herramientas de compilación, PHP ni Pages Functions a la aplicación. El comando administrado `npx wrangler deploy` de Cloudflare es únicamente el mecanismo de despliegue.
 - No agregues autenticación, sesiones, cookies, GTM, analítica o seguimiento de actividad.
 - No llames `/api/v1/*` ni servicios de AWS.
 - Limita las dependencias externas al iframe del proveedor de video.

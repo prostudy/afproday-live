@@ -1,6 +1,8 @@
 # AF Pro Day Live
 
-Sitio público y estático para la transmisión de AF Pro Day 2027. Funciona sin AWS, sesiones, cookies, APIs ni proceso de compilación.
+Sitio público y estático para la transmisión de AF Pro Day 2027. Funciona sin AWS, sesiones, cookies, APIs ni proceso de compilación de la aplicación.
+
+Está alojado como **Cloudflare Workers Static Assets**, la opción recomendada actualmente por Cloudflare para sitios estáticos nuevos. No contiene ni ejecuta un script Worker: Cloudflare entrega directamente los archivos de `public/`.
 
 ## Ejecución local
 
@@ -10,7 +12,7 @@ Desde la raíz del repositorio:
 python3 -m http.server 8080 --directory public
 ```
 
-Abre `http://localhost:8080/`. La ruta `http://localhost:8080/evento.html` redirige a la página principal en Cloudflare Pages y también contiene una redirección HTML como respaldo local.
+Abre `http://localhost:8080/`. La ruta `http://localhost:8080/evento.html` contiene una redirección HTML como respaldo local; en Cloudflare también se aplica la regla 301 de `public/_redirects`.
 
 ## Configuración del player
 
@@ -29,27 +31,39 @@ El sitio solo acepta `player.vimeo.com`, `www.youtube.com` y `www.youtube-nocook
 1. Crea o programa el evento en el proveedor de video.
 2. Copia su URL de inserción (`embed`), no la URL pública de reproducción.
 3. Configura `embedUrl` y conserva `status: 'scheduled'` mientras no deba mostrarse.
-4. Prueba la URL en el dominio de Pages.
+4. Prueba la URL en el dominio técnico de Workers.
 5. Cambia a `status: 'live'` al iniciar. Usa `offline` al finalizar o durante una interrupción.
 
-## Despliegue en Cloudflare Pages con Git
+## Despliegue en Workers Static Assets con Git
 
-Conecta el repositorio desde el panel de Cloudflare Pages y configura:
+Configuración del proyecto existente:
 
-- Framework preset: **None**
-- Build command: vacío
-- Build output directory: `public`
+- Proyecto: `afproday-live`
+- Tipo: **Worker con Static Assets, sin script Worker**
+- Repositorio: `prostudy/afproday-live`
 - Production branch: `main`
+- Build command: vacío
+- Deploy command: `npx wrangler deploy` (mecanismo administrado por Cloudflare)
+- Root directory: `/public`
+- URL técnica: `https://afproday-live.proyectosdigicaster.workers.dev`
+
+El uso de Wrangler por la plataforma solo realiza el despliegue. El sitio no usa Node, npm ni código Worker durante su funcionamiento público.
+
+En **Workers & Pages → afproday-live → Settings → Builds**, la integración con GitHub debe mostrar el repositorio anterior sin advertencias de desconexión. Si aparece **This project is disconnected from your Git account**, usa **Manage** para volver a autorizar la aplicación de Cloudflare en GitHub antes del siguiente despliegue.
 
 Este repositorio no ejecuta despliegues automáticamente desde una máquina local. Haz commit y push solo después de revisar los cambios; Cloudflare publicará el commit de `main` conforme a la integración Git configurada.
+
+Referencias oficiales: [Static Assets](https://developers.cloudflare.com/workers/static-assets/), [encabezados](https://developers.cloudflare.com/workers/static-assets/headers/) y [redirecciones](https://developers.cloudflare.com/workers/static-assets/redirects/).
 
 ## Dominio `live.afproday2027.com`
 
 El dominio `afproday2027.com` ya está administrado en Cloudflare. No se deben cambiar sus nameservers, el dominio raíz (`afproday2027.com`) ni ningún registro existente.
 
-En el proyecto `afproday-live` de Cloudflare Pages, abre **Custom domains** y agrega únicamente `live.afproday2027.com`. Cloudflare puede proponer crear o ajustar el registro DNS de ese subdominio; antes de aceptar, confirma que el único registro afectado sea `live`. Revisa el destino, TLS y el estado `Active` antes del evento.
+En **Workers & Pages → afproday-live → Domains → Add Domain**, agrega únicamente `live.afproday2027.com` como **Custom Domain**. Cloudflare creará el registro y certificado de ese hostname; antes de confirmar, verifica que el único nombre afectado sea `live`. Revisa el estado del dominio y TLS antes del evento.
 
 Crear o modificar el registro de `live`, conectar el proyecto, publicar o activar una ruta de emergencia requiere autorización humana explícita. No elimines ni reemplaces otros registros DNS.
+
+Si ya existe un registro CNAME llamado `live`, detente y revisa su uso antes de continuar. No uses una Route para este sitio: el Worker de archivos estáticos es el origen y debe conectarse como Custom Domain. Consulta la [documentación de Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/).
 
 ## Pruebas antes del evento
 
@@ -74,10 +88,10 @@ El resultado esperado es vacío salvo que se haya introducido una referencia acc
 
 ## Volver a una versión anterior
 
-En Cloudflare Pages, abre **Deployments**, localiza un despliegue de producción conocido y usa **Rollback to this deployment**. Verifica después `/`, la configuración del player y los encabezados. Si la integración Git debe permanecer alineada, revierte también el commit correspondiente mediante un nuevo commit revisado; no reescribas el historial de `main` durante el evento.
+En **Workers & Pages → afproday-live → Deployments**, localiza una versión conocida y usa la acción de rollback para devolverle el tráfico. Verifica después `/`, la configuración del player, `/evento.html` y los encabezados. Para mantener Git alineado, revierte también el cambio mediante un nuevo commit revisado; no reescribas el historial de `main` durante el evento.
 
 ## Si el proveedor rechaza el dominio
 
-Confirma que la URL sea una URL de inserción permitida y que el evento autorice reproducción en `afproday-live.pages.dev` y `live.afproday2027.com`. Añade ambos dominios a la lista permitida del proveedor o desactiva temporalmente su restricción de dominio según la política del evento. No relajes la CSP para dominios distintos sin una revisión explícita.
+Confirma que la URL sea una URL de inserción permitida y que el evento autorice reproducción en `afproday-live.proyectosdigicaster.workers.dev` y `live.afproday2027.com`. Añade ambos dominios a la lista permitida del proveedor o desactiva temporalmente su restricción de dominio según la política del evento. No relajes la CSP para dominios distintos sin una revisión explícita.
 
 Mantén `status: 'scheduled'` u `offline` hasta que la prueba funcione. Cambiar de proveedor o activar una ruta de emergencia requiere autorización humana.
