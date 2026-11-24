@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-labelledby="title">
+  <title id="title">AF Pro Day</title>
+  <defs>
+    <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b2fa8"/>
+      <stop offset="1" stop-color="#4a1fb0"/>
+    </linearGradient>
+    <linearGradient id="lc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7ff3ff"/>
+      <stop offset="1" stop-color="#22c4f2"/>
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="12" fill="url(#lg)"/>
+  <rect x="1" y="1" width="46" height="46" rx="11" fill="none" stroke="#22e4f2" stroke-opacity=".55" stroke-width="1.5"/>
+  <path d="M12 34 21.2 13h5.2L36 34h-6.1l-1.5-3.9H19L17.5 34H12Zm8.8-8.8h5.8l-2.9-7.6-2.9 7.6Z" fill="#fff"/>
+  <circle cx="35.5" cy="12.5" r="4.5" fill="url(#lc)"/>
+</svg>
