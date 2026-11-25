@@ -272,6 +272,27 @@ svg {
   transition: 160ms ease;
 }
 
+.logout-link {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: var(--muted-strong);
+  background: rgba(10, 23, 39, 0.65);
+  font-size: 0.78rem;
+  font-weight: 750;
+  text-decoration: none;
+  transition: 160ms ease;
+}
+
+.logout-link:hover {
+  border-color: var(--line-strong);
+  color: var(--cyan);
+  transform: translateY(-1px);
+}
+
 .icon-button:hover {
   border-color: var(--line-strong);
   color: var(--cyan);
@@ -773,6 +794,11 @@ svg {
 .context-strip .is-pending i {
   background: var(--amber);
   box-shadow: 0 0 10px rgba(255, 207, 112, 0.6);
+}
+
+.context-strip .is-error i {
+  background: var(--red);
+  box-shadow: 0 0 10px rgba(255, 119, 144, 0.6);
 }
 
 .command-deck {
@@ -2003,7 +2029,13 @@ input:focus-visible {
   }
 
   .topbar-meta {
-    gap: 0;
+    gap: 8px;
+  }
+
+  .logout-link {
+    min-height: 40px;
+    padding: 0 10px;
+    font-size: 0.7rem;
   }
 
   .assistant-stage {

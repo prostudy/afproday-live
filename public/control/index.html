@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Prototipo del centro de control inteligente de AF Pro Day 2027.">
+  <meta name="description" content="Centro de control protegido de AF Pro Day 2027.">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#050b18">
-  <title>AF Control | Prototipo de interfaz</title>
+  <title>AF Control | Centro de operaciones</title>
   <link rel="icon" href="/assets/img/logo.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/control/control.css">
   <script src="/config/player.js" defer></script>
@@ -88,7 +88,7 @@
 
       <span class="prototype-pill">
         <span aria-hidden="true"></span>
-        Prototipo visual
+        Operación protegida
       </span>
 
       <div class="topbar-meta">
@@ -96,7 +96,8 @@
           <strong id="clock-time">--:--</strong>
           <span id="clock-date">Cargando fecha</span>
         </div>
-        <button class="icon-button" id="open-about" type="button" aria-label="Acerca de este prototipo">
+        <a class="logout-link" href="/cdn-cgi/access/logout">Cerrar sesión</a>
+        <button class="icon-button" id="open-about" type="button" aria-label="Acerca del centro de control">
           <svg aria-hidden="true"><use href="#icon-command"></use></svg>
         </button>
       </div>
@@ -151,7 +152,7 @@
           </div>
           <div>
             <span>Backend</span>
-            <strong class="is-pending"><i></i> Pendiente</strong>
+            <strong class="is-pending" id="backend-state"><i></i> Conectando</strong>
           </div>
         </aside>
 
@@ -333,7 +334,7 @@
             </button>
           </header>
 
-          <p class="simulation-note">Esta vista lee la configuración local. El monitoreo real llegará con el backend.</p>
+          <p class="simulation-note">Esta vista combina la configuración local del player con comprobaciones remotas del backend protegido.</p>
 
           <div class="metric-primary">
             <div>
@@ -354,7 +355,7 @@
             </div>
             <div>
               <dt>Asistente IA</dt>
-              <dd class="pending-text">Modo demostración</dd>
+              <dd class="pending-text">Reglas locales</dd>
             </div>
           </dl>
 
@@ -405,7 +406,7 @@
             <span class="memory-badge"><i></i> Local</span>
           </header>
 
-          <p class="memory-copy">El prototipo ya puede orientar sobre estos temas sin enviar información a servicios externos.</p>
+          <p class="memory-copy">Digicaster puede orientar sobre estos temas mediante reglas locales, sin enviar preguntas a servicios externos.</p>
 
           <div class="knowledge-map">
             <button type="button" data-command="Explícame los entornos del proyecto"><span>Entornos</span><small>Producción y desarrollo</small></button>
@@ -424,19 +425,19 @@
     </main>
 
     <footer class="control-footer">
-      <span><i></i> Interfaz de demostración</span>
-      <p>Sin login real · Sin backend · Sin API · Sin credenciales</p>
+      <span><i></i> Acceso protegido</span>
+      <p>Cloudflare Access · API de estado privada · Sin credenciales en el navegador</p>
     </footer>
   </div>
 
   <dialog class="about-dialog" id="about-dialog">
     <div class="dialog-icon" aria-hidden="true"><svg><use href="#icon-spark"></use></svg></div>
-    <p class="panel-eyebrow">Alcance de esta versión</p>
-    <h2>Una interfaz inteligente antes de conectar la inteligencia.</h2>
-    <p>Las respuestas actuales se generan con reglas locales para evaluar la experiencia. No hay autenticación, monitoreo remoto ni conexión con OpenAI o Claude.</p>
+    <p class="panel-eyebrow">Alcance actual</p>
+    <h2>Un centro protegido con asistencia local.</h2>
+    <p>Cloudflare Access protege esta ruta y la API privada comprueba los servicios. Las respuestas de Digicaster todavía se generan mediante reglas locales, sin conexión con OpenAI o Claude.</p>
     <ul>
       <li>Los enlaces sí apuntan a las URLs proporcionadas.</li>
-      <li>El estado de transmisión se lee del archivo local del player.</li>
+      <li>El estado del player se combina con comprobaciones HTTP remotas.</li>
       <li>La lista de preparación vive solamente durante esta sesión.</li>
     </ul>
     <button id="close-about" type="button">Entendido</button>

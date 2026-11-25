@@ -57,7 +57,9 @@ La ruta `/control/` contiene el centro de control Digicaster. Comparte este repo
 - `public/worker.js` solo se ejecuta para `/control` y `/control/*`; las páginas públicas continúan sirviéndose directamente como Static Assets.
 - El Worker bloquea `/control/*` en el hostname técnico y expone `/control/api/status` únicamente detrás de Access.
 - El estado consulta una lista fija de URLs públicas con timeout. No usa credenciales ni APIs de AWS, GitHub, Cloudflare o Mailtrap.
+- La comprobación de la propia transmisión lee el asset desplegado mediante el binding estático para evitar subrequests recursivos al mismo hostname.
 - La interfaz no contiene contraseñas ni claves API. Cualquier integración futura debe usar Secrets de Cloudflare.
+- El enlace **Cerrar sesión** termina la sesión de Cloudflare Access mediante `/cdn-cgi/access/logout`.
 
 No publiques el centro de control antes de crear y probar la aplicación de Access. La aplicación debe cubrir `/control/*` y permitir solamente los correos aprobados; usa One-time PIN como método de acceso.
 

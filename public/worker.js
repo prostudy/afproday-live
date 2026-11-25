@@ -28,7 +28,8 @@ const STATUS_TARGETS = Object.freeze([
   {
     id: 'live-control',
     name: 'Transmisión',
-    url: 'https://live.afproday2027.com/'
+    url: 'https://live.afproday2027.com/',
+    assetPath: '/'
   }
 ]);
 
@@ -73,20 +74,28 @@ function classifyStatus(httpStatus) {
   return 'unavailable';
 }
 
-async function checkTarget(target) {
+async function checkTarget(target, env) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), CHECK_TIMEOUT_MS);
   const startedAt = Date.now();
 
   try {
-    const response = await fetch(target.url, {
-      method: 'HEAD',
-      redirect: 'manual',
-      signal: controller.signal,
-      headers: {
-        'User-Agent': 'AF-Pro-Day-Control/1.0'
-      }
-    });
+    // A Worker subrequest to its own public hostname can loop through the same
+    // zone and produce a false 522. Read the deployed static asset directly
+    // through the binding instead; external services still use HTTP checks.
+    const response = target.assetPath
+      ? await env.ASSETS.fetch(new Request(`https://assets.local${target.assetPath}`, {
+          method: 'GET',
+          signal: controller.signal
+        }))
+      : await fetch(target.url, {
+          method: 'HEAD',
+          redirect: 'manual',
+          signal: controller.signal,
+          headers: {
+            'User-Agent': 'AF-Pro-Day-Control/1.0'
+          }
+        });
 
     const latencyMs = Date.now() - startedAt;
     response.body?.cancel();
@@ -114,8 +123,8 @@ async function checkTarget(target) {
   }
 }
 
-async function getSystemStatus() {
-  const services = await Promise.all(STATUS_TARGETS.map(checkTarget));
+async function getSystemStatus(env) {
+  const services = await Promise.all(STATUS_TARGETS.map((target) => checkTarget(target, env)));
   const available = services.filter((service) => (
     service.status === 'operational' || service.status === 'protected'
   )).length;
@@ -169,7 +178,7 @@ export default {
         return jsonResponse({ error: 'access-required' }, 403);
       }
 
-      return jsonResponse(await getSystemStatus());
+      return jsonResponse(await getSystemStatus(env));
     }
 
     return env.ASSETS.fetch(request);

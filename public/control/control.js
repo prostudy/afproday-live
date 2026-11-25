@@ -14,6 +14,7 @@
   const playerStatusValue = document.querySelector('#player-status-value');
   const serviceLiveTag = document.querySelector('#service-live-tag');
   const apiStatusValue = document.querySelector('#api-status-value');
+  const backendState = document.querySelector('#backend-state');
   const lastReading = document.querySelector('#last-reading');
   const scanButton = document.querySelector('#scan-button');
   const aboutDialog = document.querySelector('#about-dialog');
@@ -229,7 +230,7 @@
       updateAssistant({
         kicker: 'Repositorio identificado',
         title: 'Código de AF Pro Day Live.',
-        summary: 'Este es el repositorio del sitio de transmisión y del prototipo actual de Digicaster.',
+        summary: 'Este es el repositorio del sitio de transmisión y del centro de control Digicaster.',
         resource: resources.githubLive
       });
       return;
@@ -259,7 +260,7 @@
       updateAssistant({
         kicker: 'Ruta identificada',
         title: 'Panel operativo de producción.',
-        summary: 'El acceso administrativo está separado de la experiencia pública. La autenticación real no forma parte de este prototipo.',
+        summary: 'El acceso administrativo está separado de la experiencia pública. El centro de control utiliza Cloudflare Access; cada panel conserva su propia autenticación.',
         resource: resources.productionAdmin
       });
       return;
@@ -329,16 +330,18 @@
       updateAssistant({
         kicker: 'Memoria local',
         title: 'Conozco las rutas y reglas esenciales.',
-        summary: 'Esta demostración reconoce entornos, paneles administrativos, transmisión, dominio, preparación y la futura integración del asistente.'
+        summary: 'La memoria local reconoce entornos, paneles administrativos, transmisión, dominio, preparación y la futura integración del asistente.'
       });
       return;
     }
 
     if (command.includes('estado') || command.includes('status') || command.includes('salud')) {
       updateAssistant({
-        kicker: 'Alcance actual',
-        title: 'Configuración visible; monitoreo pendiente.',
-        summary: `El navegador está ${navigator.onLine ? 'con conexión' : 'sin conexión'} y el player indica “${playerLabel}”. La disponibilidad real se conectará en la fase de backend.`
+        kicker: 'Estado del sistema',
+        title: apiStatusValue.textContent === 'Conectada' ? 'Monitoreo protegido conectado.' : 'Monitoreo remoto no disponible.',
+        summary: apiStatusValue.textContent === 'Conectada'
+          ? `La API privada está conectada, el navegador está ${navigator.onLine ? 'en línea' : 'sin conexión'} y el player indica “${playerLabel}”.`
+          : `Digicaster conserva la lectura local: navegador ${navigator.onLine ? 'en línea' : 'sin conexión'} y player “${playerLabel}”.`
       });
       return;
     }
@@ -354,7 +357,7 @@
     }
 
     updateAssistant({
-      kicker: 'Consulta fuera de la demo',
+      kicker: 'Consulta fuera de la memoria local',
       title: 'Esa pregunta necesita la memoria completa.',
       summary: 'La interfaz ya está preparada para mostrar la respuesta, pero el conocimiento amplio se conectará después de aprobar este diseño. Prueba con producción, desarrollo, transmisión, dominio o preparación.'
     });
@@ -391,6 +394,14 @@
     apiStatusValue.textContent = label;
     apiStatusValue.classList.remove('pending-text', 'connected-text', 'error-text');
     apiStatusValue.classList.add(className);
+
+    backendState.lastChild.textContent = className === 'connected-text'
+      ? ' Conectado'
+      : className === 'error-text'
+        ? ' No disponible'
+        : ' Conectando';
+    backendState.classList.toggle('is-pending', className === 'pending-text');
+    backendState.classList.toggle('is-error', className === 'error-text');
   }
 
   function applyRemoteStatuses(services) {
@@ -490,7 +501,7 @@
       updateAssistant({
         kicker: 'Preparación completa',
         title: 'La lista visual está lista.',
-        summary: 'Todos los puntos de esta sesión fueron marcados. En la versión final, el backend podrá conservar responsables, evidencias y tiempos.'
+        summary: 'Todos los puntos de esta sesión fueron marcados. La lista actual es local; una fase futura podrá conservar responsables, evidencias y tiempos.'
       });
     }
   }
